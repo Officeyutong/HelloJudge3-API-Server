@@ -1,0 +1,45 @@
+{
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'hellojudge3-api-server'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=hellojudge3-api-server",
+                    "--package=hellojudge3-api-server"
+                ],
+                "filter": {
+                    "name": "hellojudge3-api-server",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'hellojudge3-api-server'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=hellojudge3-api-server",
+                    "--package=hellojudge3-api-server"
+                ],
+                "filter": {
+                    "name": "hellojudge3-api-server",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}

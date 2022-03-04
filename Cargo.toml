@@ -1,0 +1,24 @@
+[package]
+name = "hellojudge3-api-server"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+actix = "0.13.0"
+anyhow = "1.0.55"
+flexi_logger = "0.22.3"
+log = "0.4.14"
+sea-orm = { version = "0.6.0", features = ["macros" ,"sqlx-mysql", "runtime-actix-native-tls"] }
+serde = "1.0.136"
+serde_json = "1.0.79"
+serde_yaml = "0.8.23"
+tokio = {version = "1.17.0", features = ["full"]}
+celery = "0.4.0-rcn.11"
+redis = "0.21.5"
+relock = "0.1.2"
+chrono = "0.4.19"
+paste = "1.0.6"
+serde_derive = "1.0.136"
+clap = "3.1.5"
