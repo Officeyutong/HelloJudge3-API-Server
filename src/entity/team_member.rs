@@ -7,6 +7,8 @@ pub struct Model {
     pub team_id: i32,
     #[sea_orm(primary_key)]
     pub uid: i32,
+    #[sea_orm(indexed)]
+    pub is_admin: bool,
 }
 
 impl ActiveModelBehavior for ActiveModel {}

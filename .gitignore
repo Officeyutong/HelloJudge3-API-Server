@@ -3,3 +3,7 @@ config.yaml
 config.default.yaml
 uploads
 logs
+cli_config.yaml
+problem-files-import.json
+image-store-import.json
+team-files-import.json

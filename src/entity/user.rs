@@ -1,3 +1,4 @@
+
 use sea_orm::entity::prelude::*;
 
 use super::model::StringList;
@@ -12,8 +13,8 @@ pub struct Model {
     pub username: String,
     #[sea_orm(column_type = "String(Some(256))", unique)]
     pub password: String,
-    #[sea_orm(column_type = "Custom(\"LONGTEXT\".to_string())", nullable)]
-    pub description: Option<String>,
+    #[sea_orm(column_type = "Custom(\"LONGTEXT\".to_string())")]
+    pub description: String,
     #[sea_orm(column_type = "String(Some(128))", indexed)]
     pub email: String,
     pub register_time: chrono::NaiveDateTime,
@@ -37,14 +38,14 @@ pub struct Model {
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
-    #[sea_orm(
-        belongs_to = "super::permission_group::Entity",
-        from = "Column::PermissionGroup",
-        to = "super::permission_group::Column::Id",
-        on_delete = "Restrict",
-        on_update = "Restrict"
-    )]
-    PermissionGroup,
+    // #[sea_orm(
+    //     belongs_to = "super::permission_group::Entity",
+    //     from = "Column::PermissionGroup",
+    //     to = "super::permission_group::Column::Id",
+    //     on_delete = "Restrict",
+    //     on_update = "Restrict"
+    // )]
+    // PermissionGroup,
     #[sea_orm(has_many = "super::user_rating_history::Entity")]
     UserRatingHistory,
 }

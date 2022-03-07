@@ -6,7 +6,7 @@ pub struct Model {
     #[sea_orm(primary_key)]
     pub pack_id: i32,
     #[sea_orm(primary_key, column_type = "String(Some(20))")]
-    pub phone: i32,
+    pub phone: String,
     pub claimed: bool,
 }
 

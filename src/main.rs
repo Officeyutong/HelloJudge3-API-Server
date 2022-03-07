@@ -14,6 +14,7 @@ pub mod config;
 pub mod core;
 pub mod entity;
 mod test;
+mod util;
 pub fn my_log_format(
     w: &mut dyn std::io::Write,
     now: &mut DeferredNow,

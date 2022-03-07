@@ -1,3 +1,4 @@
+
 use sea_orm::entity::prelude::*;
 
 use super::model::{SubmissionResult, UsizeList};
@@ -16,9 +17,9 @@ pub struct Model {
     #[sea_orm(default = false)]
     pub public: bool,
     #[sea_orm(nullable, indexed, default = None)]
-    pub contest_id: i32,
+    pub contest_id: Option<i32>,
     #[sea_orm(nullable, indexed, default = None)]
-    pub virtual_contest_id: i32,
+    pub virtual_contest_id: Option<i32>,
     #[sea_orm(column_type = "Custom(\"LONGTEXT\".into())")]
     pub code: String,
     #[sea_orm(default = "{}")]
@@ -29,7 +30,7 @@ pub struct Model {
     pub memory_cost: i64,
     #[sea_orm(indexed, default = 0)]
     pub time_cost: i64,
-    #[sea_orm(column_type = "String(Some(20))")]
+    #[sea_orm(column_type = "String(Some(128))")]
     pub extra_compile_parameter: String,
     #[sea_orm(default = "[]")]
     pub selected_compile_parameters: UsizeList,

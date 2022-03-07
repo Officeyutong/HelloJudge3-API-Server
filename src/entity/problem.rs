@@ -1,8 +1,12 @@
-use sea_orm::entity::prelude::*;
+use anyhow::anyhow;
 
-use super::{model::{
-    problem_extra_parameter::ExtraParameter, Example, ProblemFile, ProblemSubtask, StringList,
-}, problemset_problem};
+use sea_orm::entity::prelude::*;
+use std::str::FromStr;
+
+use super::{
+    model::{problem_extra_parameter::ExtraParameter, Example, ProblemSubtask},
+    problemset_problem,
+};
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "problem")]
 pub struct Model {
@@ -23,13 +27,13 @@ pub struct Model {
     #[sea_orm(column_type = "Custom(\"LONGTEXT\".to_string())", default = "")]
     pub hint: String,
     #[sea_orm(default = "[]")]
-    pub example: Example,
-    #[sea_orm(default = "[]")]
-    pub files: ProblemFile,
-    #[sea_orm(default = "[]")]
-    pub downloads: StringList,
-    #[sea_orm(default = "[]")]
-    pub provides: StringList,
+    pub examples: Example,
+    // #[sea_orm(default = "[]")]
+    // pub files: ProblemFile,
+    // #[sea_orm(default = "[]")]
+    // pub downloads: StringList,
+    // #[sea_orm(default = "[]")]
+    // pub provides: StringList,
     #[sea_orm(default = "[]")]
     pub subtasks: ProblemSubtask,
     #[sea_orm(default = false, indexed)]
@@ -80,6 +84,19 @@ pub enum ProblemType {
     RemoteJudge,
     #[sea_orm(string_value = "submit_answer")]
     SubmitAnswer,
+}
+
+impl FromStr for ProblemType {
+    type Err = anyhow::Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "traditional" => Ok(Self::Traditional),
+            "remote_judge" => Ok(Self::RemoteJudge),
+            "submit_answer" => Ok(Self::SubmitAnswer),
+            _ => Err(anyhow!("Invalid problem type: {}", s)),
+        }
+    }
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

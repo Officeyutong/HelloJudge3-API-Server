@@ -1,5 +1,8 @@
-use sea_orm::entity::prelude::*;
+use std::str::FromStr;
 
+use anyhow::anyhow;
+
+use sea_orm::entity::prelude::*;
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "contest")]
 pub struct Model {
@@ -39,6 +42,19 @@ pub enum RankCriterion {
     LastSubmit,
     #[sea_orm(string_value = "penalty")]
     Penalty,
+}
+
+impl FromStr for RankCriterion {
+    type Err = anyhow::Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "max_score" => Ok(Self::MaxScore),
+            "last_submit" => Ok(Self::LastSubmit),
+            "penalty" => Ok(Self::Penalty),
+            _ => Err(anyhow!("Invalid rank criterion: {}", s)),
+        }
+    }
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

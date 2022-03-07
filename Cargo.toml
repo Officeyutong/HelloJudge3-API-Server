@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 actix = "0.13.0"
-anyhow = "1.0.55"
+anyhow = { version = "1.0.55", features = ["backtrace"] }
 flexi_logger = "0.22.3"
 log = "0.4.14"
 sea-orm = { version = "0.6.0", features = ["macros" ,"sqlx-mysql", "runtime-actix-native-tls"] }
@@ -22,3 +22,8 @@ chrono = "0.4.19"
 paste = "1.0.6"
 serde_derive = "1.0.136"
 clap = "3.1.5"
+sqlx = { version = "0.5.11", features = ["mysql"] }
+futures = "0.3.21"
+argon2 = "0.3.4"
+rand_core = { version = "0.6.3", features = ["std"] }
+uuid = { version = "0.8.2", features = ["v4"] }

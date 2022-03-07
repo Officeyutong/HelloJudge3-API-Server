@@ -26,8 +26,8 @@ pub enum Relation {
         belongs_to = "super::contest::Entity",
         from = "Column::ContestId",
         to = "super::contest::Column::Id",
-        on_update = "Cascade",
-        on_delete = "Cascade"
+        on_update = "Restrict",
+        on_delete = "Restrict"
     )]
     Contest,
 }
