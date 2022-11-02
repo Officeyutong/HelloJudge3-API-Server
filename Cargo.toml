@@ -10,11 +10,11 @@ actix = "0.13.0"
 anyhow = { version = "1.0.55", features = ["backtrace"] }
 flexi_logger = "0.22.3"
 log = "0.4.14"
-sea-orm = { version = "0.6.0", features = ["macros" ,"sqlx-mysql", "runtime-actix-native-tls"] }
-serde = "1.0.136"
+sea-orm = { version = "0.9.3", features = ["macros" ,"sqlx-mysql", "runtime-actix-native-tls", "mock"] }
+serde = { version = "1.0.136", features = ["derive"] }
 serde_json = "1.0.79"
 serde_yaml = "0.8.23"
-tokio = {version = "1.17.0", features = ["full"]}
+tokio = { version = "1.17.0", features = ["test-util"] }
 celery = "0.4.0-rcn.11"
 redis = "0.21.5"
 relock = "0.1.2"
@@ -22,8 +22,22 @@ chrono = "0.4.19"
 paste = "1.0.6"
 serde_derive = "1.0.136"
 clap = "3.1.5"
-sqlx = { version = "0.5.11", features = ["mysql"] }
+sqlx = { version = "^0.6", features = ["mysql", "runtime-actix-native-tls", "chrono"] }
 futures = "0.3.21"
 argon2 = "0.3.4"
 rand_core = { version = "0.6.3", features = ["std"] }
 uuid = { version = "0.8.2", features = ["v4"] }
+async-trait = "0.1.52"
+lazy_static = "1.4.0"
+regex = "1.5.4"
+async-recursion = "1.0.0"
+actix-web = "4.0.1"
+actix-session = "0.5.0"
+actix-utils = "3.0.0"
+actix-multipart = "0.4.0"
+lettre = { version = "0.10.0-rc.4", features = ["tokio1-native-tls"] }
+encoding_rs = "0.8.30"
+sea-query = { version = "^0.26.3", features = ["thread-safe"] }
+# lettre_email = "0.9.4"
+# smtp = "0.3.2"
+# native-tls = "0.2.8"

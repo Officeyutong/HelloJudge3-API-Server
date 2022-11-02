@@ -9,27 +9,27 @@ pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
     pub owner_id: i32,
-    #[sea_orm(column_type = "String(Some(128))", default = "新建比赛")]
+    #[sea_orm(column_type = "String(Some(128))")]
     pub name: String,
-    #[sea_orm(column_type = "Custom(\"LONGTEXT\".to_string())", default = "")]
+    #[sea_orm(column_type = "Custom(\"LONGTEXT\".to_string())")]
     pub description: String,
     pub start_time: chrono::NaiveDateTime,
     pub end_time: chrono::NaiveDateTime,
-    #[sea_orm(default = false)]
+    #[sea_orm(default_value = false)]
     pub ranklist_visible: bool,
-    #[sea_orm(default = false)]
+    #[sea_orm(default_value = false)]
     pub judge_result_visible: bool,
-    #[sea_orm(default = "max_score")]
+    // #[sea_orm(default_expr = "RankCriterion::MaxScore")]
     pub rank_criterion: RankCriterion,
     #[sea_orm(column_type = "Custom(\"LONGTEXT\".to_string())")]
     pub invite_code: String,
-    #[sea_orm(default = false)]
+    #[sea_orm(default_value = false)]
     pub rated: bool,
     #[sea_orm(nullable)]
     pub rated_time: Option<chrono::NaiveDateTime>,
-    #[sea_orm(default = true)]
+    #[sea_orm(default_value = true)]
     pub private_contest: bool,
-    #[sea_orm(default = false)]
+    #[sea_orm(default_value = false)]
     pub closed: bool,
 }
 
@@ -42,6 +42,12 @@ pub enum RankCriterion {
     LastSubmit,
     #[sea_orm(string_value = "penalty")]
     Penalty,
+}
+
+impl Default for RankCriterion {
+    fn default() -> Self {
+        Self::MaxScore
+    }
 }
 
 impl FromStr for RankCriterion {

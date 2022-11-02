@@ -18,19 +18,19 @@ pub struct Model {
     #[sea_orm(column_type = "String(Some(128))", indexed)]
     pub email: String,
     pub register_time: chrono::NaiveDateTime,
-    // #[sea_orm(default = "[]")]
+    // #[sea_orm(default_value = "[]")]
     // pub rating_history: RatingHistory,
-    #[sea_orm(indexed, default = 1500)]
+    #[sea_orm(indexed, default_value = 1500)]
     pub rating: i32,
-    #[sea_orm(column_type = "String(Some(20))", default = "default")]
+    #[sea_orm(column_type = "String(Some(20))", default_value = "default")]
     pub permission_group: String,
-    #[sea_orm(default = "[]")]
+    // #[sea_orm(default_value = "[]")]
     pub permissions: StringList,
-    #[sea_orm(default = 0)]
+    #[sea_orm(default_value = 0)]
     pub force_logout_before: i64,
-    #[sea_orm(column_type = "String(Some(20))", nullable, default = "", indexed)]
+    #[sea_orm(column_type = "String(Some(20))", nullable, default_value = "", indexed)]
     pub phone_number: Option<String>,
-    #[sea_orm(default = false)]
+    #[sea_orm(default_value = false)]
     pub phone_verified: bool,
     #[sea_orm(nullable)]
     pub last_refreshed_cached_accepted_problems: Option<chrono::NaiveDateTime>,

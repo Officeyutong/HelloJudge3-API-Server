@@ -10,7 +10,7 @@ pub struct Model {
     pub name: String,
     #[sea_orm(indexed)]
     pub size: i64,
-    #[sea_orm(indexed)]
+    #[sea_orm(indexed,)]
     pub upload_time: chrono::NaiveDateTime,
 }
 

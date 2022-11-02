@@ -9,13 +9,13 @@ pub struct Model {
     pub id: i32,
     pub contest: i32,
     pub problem_type: PreliminaryProblemType,
-    #[sea_orm(indexed,default = -1)]
+    #[sea_orm(indexed,default_value = -1)]
     pub problem_id: i32,
     #[sea_orm(column_type = "Custom(\"LONGTEXT\".into())")]
     pub content: String,
-    #[sea_orm(default = "[]")]
+    // #[sea_orm(default_value = "[]")]
     pub questions: PreliminarySubquestionList,
-    #[sea_orm(default = 0)]
+    #[sea_orm(default_value = 0)]
     pub score: f64,
 }
 

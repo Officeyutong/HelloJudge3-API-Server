@@ -1,5 +1,6 @@
-
 use sea_orm::entity::prelude::*;
+
+use crate::core::ResultType;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "follower")]
@@ -32,3 +33,7 @@ pub enum Relation {
     Target,
 }
 impl ActiveModelBehavior for ActiveModel {}
+#[inline]
+pub async fn following(db: &DatabaseConnection, src: i32, tgt: i32) -> ResultType<bool> {
+    Ok(Entity::find_by_id((src, tgt)).one(db).await?.is_some())
+}

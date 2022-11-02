@@ -7,9 +7,9 @@ pub struct Model {
     pub problem_id: i32,
     #[sea_orm(primary_key, column_type = "String(Some(40))")]
     pub file_id: String,
-    #[sea_orm(indexed, default = false)]
+    #[sea_orm(indexed, default_value = false)]
     pub public: bool,
-    #[sea_orm(indexed, default = false)]
+    #[sea_orm(indexed, default_value = false)]
     pub provide: bool,
 }
 

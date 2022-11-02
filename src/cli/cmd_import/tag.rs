@@ -21,7 +21,7 @@ pub async fn import_tag(db: &DatabaseConnection, hj2: &MySqlPool) -> ResultType<
                 display: Set(row.try_get("display")?),
                 color: Set(row.try_get("color")?),
             }
-            .insert(db) 
+            .insert(db)
             .await?;
         }
     }

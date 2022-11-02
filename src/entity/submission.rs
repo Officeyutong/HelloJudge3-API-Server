@@ -14,25 +14,25 @@ pub struct Model {
     #[sea_orm(indexed)]
     pub problem_id: i32,
     pub submit_time: chrono::NaiveDateTime,
-    #[sea_orm(default = false)]
+    #[sea_orm(default_value = false)]
     pub public: bool,
-    #[sea_orm(nullable, indexed, default = None)]
+    #[sea_orm(nullable, indexed, default_value = None)]
     pub contest_id: Option<i32>,
-    #[sea_orm(nullable, indexed, default = None)]
+    #[sea_orm(nullable, indexed, default_value = None)]
     pub virtual_contest_id: Option<i32>,
     #[sea_orm(column_type = "Custom(\"LONGTEXT\".into())")]
     pub code: String,
-    #[sea_orm(default = "{}")]
+    // #[sea_orm(default_value = "{}")]
     pub judge_result: SubmissionResult,
-    #[sea_orm(indexed, default = 0)]
+    #[sea_orm(indexed, default_value = 0)]
     pub score: i32,
-    #[sea_orm(indexed, default = 0)]
+    #[sea_orm(indexed, default_value = 0)]
     pub memory_cost: i64,
-    #[sea_orm(indexed, default = 0)]
+    #[sea_orm(indexed, default_value = 0)]
     pub time_cost: i64,
     #[sea_orm(column_type = "String(Some(128))")]
     pub extra_compile_parameter: String,
-    #[sea_orm(default = "[]")]
+    // #[sea_orm(default_value = "[]")]
     pub selected_compile_parameters: UsizeList,
     #[sea_orm(indexed)]
     pub status: SubmissionStatus,

@@ -7,7 +7,7 @@ pub struct Model {
     pub id: i32,
     #[sea_orm(column_type = "String(Some(30))")]
     pub name: String,
-    #[sea_orm(default = 1, unique, indexed)]
+    #[sea_orm(default_value = 1, unique, indexed)]
     pub level: i32,
     pub description: String,
 }

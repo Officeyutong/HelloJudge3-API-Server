@@ -1,6 +1,8 @@
 use futures::TryStreamExt;
 use log::info;
-use sea_orm::{ActiveModelTrait, DatabaseConnection, EntityTrait, QuerySelect, Set, PaginatorTrait};
+use sea_orm::{
+    ActiveModelTrait, DatabaseConnection, EntityTrait, PaginatorTrait, QuerySelect, Set,
+};
 use sqlx::{MySqlPool, Row};
 
 use crate::{
@@ -32,7 +34,12 @@ pub async fn import_problemset(db: &DatabaseConnection, hj2: &MySqlPool) -> Resu
             .await?;
             let problems: Vec<i32> = serde_json::from_str(row.try_get("problems")?)?;
             for (seq, item) in problems.iter().enumerate() {
-                if problem::Entity::find_by_id(*item).limit(1).count(db).await? == 0 {
+                if problem::Entity::find_by_id(*item)
+                    .limit(1)
+                    .count(db)
+                    .await?
+                    == 0
+                {
                     info!("Ignore problem: {}", item);
                     continue;
                 }

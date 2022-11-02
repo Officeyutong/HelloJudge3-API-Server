@@ -8,7 +8,7 @@ pub struct Model {
     #[sea_orm(indexed)]
     pub contest_id: i32,
     pub sender: i32,
-    #[sea_orm(indexed)]
+    #[sea_orm(indexed, )]
     pub send_time: chrono::NaiveDateTime,
     #[sea_orm(column_type = "Custom(\"LONGTEXT\".into())")]
     pub content: String,

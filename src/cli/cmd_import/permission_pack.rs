@@ -1,6 +1,8 @@
 use futures::TryStreamExt;
 use log::{debug, info};
-use sea_orm::{ActiveModelTrait, DatabaseConnection, EntityTrait, QuerySelect, Set, PaginatorTrait};
+use sea_orm::{
+    ActiveModelTrait, DatabaseConnection, EntityTrait, PaginatorTrait, QuerySelect, Set,
+};
 use sqlx::{MySqlPool, Row};
 
 use crate::{

@@ -7,9 +7,9 @@ use super::model::StringList;
 pub struct Model {
     #[sea_orm(primary_key, column_type = "String(Some(20))", auto_increment = false)]
     pub id: String,
-    #[sea_orm(column_type = "String(Some(50))", default = "新建权限组")]
+    #[sea_orm(column_type = "String(Some(50))")]
     pub name: String,
-    #[sea_orm(default = "[]")]
+    // #[sea_orm(default_value = "[]")]
     pub permissions: StringList,
     #[sea_orm(column_type = "String(Some(20))", nullable)]
     pub inherit: Option<String>,

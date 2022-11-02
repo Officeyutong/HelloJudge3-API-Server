@@ -82,3 +82,9 @@ macro_rules! declare_simple_json_type {
 
 declare_simple_json_type!(StringList, Vec::<String>, string_list);
 declare_simple_json_type!(UsizeList, Vec::<usize>, usize_list);
+
+impl Default for StringList {
+    fn default() -> Self {
+        Self(Default::default())
+    }
+}

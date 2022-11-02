@@ -7,11 +7,11 @@ use super::model::wiki_navigation_menu::WikiNavigationMenuList;
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
-    #[sea_orm(default = "新建导航")]
+    #[sea_orm(default_value = "新建导航", column_type = "String(Some(30))")]
     pub title: String,
-    #[sea_orm(indexed, default = 1)]
+    #[sea_orm(indexed, default_value = 1)]
     pub priority: i32,
-    #[sea_orm(default = "[]")]
+    // #[sea_orm(default_value = "[]")]
     pub menu: WikiNavigationMenuList,
 }
 

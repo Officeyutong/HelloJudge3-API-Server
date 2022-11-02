@@ -8,7 +8,7 @@ pub struct Model {
     #[sea_orm(primary_key)]
     pub contest_id: i32,
     pub sequence: i32,
-    #[sea_orm(default = 1.0)]
+    #[sea_orm(default_value = 1.0)]
     pub score_weight: f64,
 }
 

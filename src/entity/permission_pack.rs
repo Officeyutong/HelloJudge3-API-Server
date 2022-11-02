@@ -9,7 +9,7 @@ pub struct Model {
     pub name: String,
     #[sea_orm(column_type = "Custom(\"LONGTEXT\".into())")]
     pub description: String,
-    #[sea_orm(default = "[]")]
+    // #[sea_orm(default_value = "[]")]
     pub permissions: StringList,
 }
 

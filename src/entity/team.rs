@@ -6,14 +6,14 @@ use sea_orm::entity::prelude::*;
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
-    #[sea_orm(column_type = "String(Some(30))", default = "新建团队")]
+    #[sea_orm(column_type = "String(Some(30))", default_value = "新建团队")]
     pub name: String,
     #[sea_orm(column_type = "Custom(\"LONGTEXT\".into())")]
     pub description: String,
     #[sea_orm(indexed)]
     pub owner_id: i32,
     pub create_time: chrono::NaiveDateTime,
-    #[sea_orm(default = true)]
+    #[sea_orm(default_value = true)]
     pub private: bool,
     pub invite_code: String,
 }

@@ -8,17 +8,17 @@ use super::{model::ProblemsetForeignProblem, problemset_problem};
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
-    #[sea_orm(column_type = "String(Some(100))", default = "新建习题集")]
+    #[sea_orm(column_type = "String(Some(100))", default_value = "新建习题集")]
     pub name: String,
     #[sea_orm(column_type = "Custom(\"LONGTEXT\".into())")]
     pub description: String,
     #[sea_orm(indexed)]
     pub owner_id: i32,
     pub create_time: chrono::NaiveDateTime,
-    #[sea_orm(default = true)]
+    #[sea_orm(default_value = true)]
     pub private: bool,
     pub invite_code: String,
-    #[sea_orm(default = "[]")]
+    // #[sea_orm(default_value = "[]")]
     pub foreign_problems: ProblemsetForeignProblem,
 }
 

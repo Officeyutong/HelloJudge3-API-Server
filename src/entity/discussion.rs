@@ -1,4 +1,3 @@
-
 use sea_orm::entity::prelude::*;
 
 use crate::core::model::discussion_path::DiscussionRoot;
@@ -16,7 +15,7 @@ pub struct Model {
     pub content: String,
     #[sea_orm(indexed)]
     pub uid: i32,
-    #[sea_orm(indexed)]
+    #[sea_orm(indexed, )]
     pub time: chrono::NaiveDateTime,
     pub private: bool,
 }

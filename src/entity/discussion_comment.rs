@@ -1,6 +1,4 @@
-
 use sea_orm::entity::prelude::*;
-
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "discussion_comment")]
@@ -11,7 +9,7 @@ pub struct Model {
     pub content: String,
     #[sea_orm(indexed)]
     pub uid: i32,
-    #[sea_orm(indexed)]
+    #[sea_orm(indexed,)]
     pub time: chrono::NaiveDateTime,
     #[sea_orm(indexed)]
     pub discussion_id: i32,
