@@ -19,7 +19,7 @@ celery = "0.4.0-rcn.11"
 redis = "0.21.5"
 relock = "0.1.2"
 chrono = "0.4.19"
-paste = "1.0.6"
+paste = "1.0.9"
 serde_derive = "1.0.136"
 clap = "3.1.5"
 sqlx = { version = "^0.6", features = ["mysql", "runtime-actix-native-tls", "chrono"] }
@@ -38,6 +38,7 @@ actix-multipart = "0.4.0"
 lettre = { version = "0.10.0-rc.4", features = ["tokio1-native-tls"] }
 encoding_rs = "0.8.30"
 sea-query = { version = "^0.26.3", features = ["thread-safe"] }
+urlencoding = "2.1.2"
 # lettre_email = "0.9.4"
 # smtp = "0.3.2"
 # native-tls = "0.2.8"

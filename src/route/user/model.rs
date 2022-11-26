@@ -10,3 +10,9 @@ pub struct EmailAuthInfo {
 pub struct ResetPasswordInfo {
     pub uid: i32,
 }
+
+#[derive(Deserialize, Serialize, Debug)]
+pub struct EmailChangeStoreInfo {
+    pub uid: i32,
+    pub new_email: String,
+}

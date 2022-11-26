@@ -11,8 +11,9 @@ use crate::{
         msg_err_wrp, ok_wrp, redis_key_email_auth, state::HJ3State, ActixResult, MySimpleResponse,
         SESSION_LOGIN_TIME, SESSION_UID,
     },
+    entity::model::StringList,
     route::user::model::EmailAuthInfo,
-    util::{argon2_hash, log_ise, simple_sendmail}, entity::model::StringList,
+    util::{argon2_hash, log_ise, log_ise_ns, simple_sendmail},
 };
 use anyhow::anyhow;
 #[derive(Deserialize)]
@@ -32,7 +33,11 @@ pub async fn register(
     if cfg.auth.use_phone_when_register_ans_resetpasswd {
         return msg_err_wrp("当前不使用邮箱注册!");
     }
-    if session.get::<i32>(SESSION_UID).map_err(log_ise)?.is_some() {
+    if session
+        .get::<i32>(SESSION_UID)
+        .map_err(log_ise_ns)?
+        .is_some()
+    {
         return msg_err_wrp("你已登录!");
     }
     let expr = Regex::new(&cfg.common.username_regex)
@@ -102,10 +107,10 @@ pub async fn register(
         .map_err(|e| anyhow!("Failed to insert: {}", e))
         .map_err(log_ise)?;
         let uid = model.id;
-        session.insert(SESSION_UID, uid).map_err(log_ise)?;
+        session.insert(SESSION_UID, uid).map_err(log_ise_ns)?;
         session
             .insert(SESSION_LOGIN_TIME, chrono::Local::now().timestamp())
-            .map_err(log_ise)?;
+            .map_err(log_ise_ns)?;
         return ok_wrp();
     }
 }

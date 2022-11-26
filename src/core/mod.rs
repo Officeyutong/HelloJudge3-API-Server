@@ -26,6 +26,10 @@ pub fn redis_key_email_auth(token: &str) -> String {
     format!("hj3-email-auth-{}", token)
 }
 #[inline]
+pub fn redis_key_email_change(token: &str) -> String {
+    format!("hj3-email-change-{}", token)
+}
+#[inline]
 pub fn redis_key_reset_password(token: &str) -> String {
     format!("hj3-email-reset-password-{}", token)
 }
@@ -35,6 +39,23 @@ pub struct MySimpleRawResponse<T: Serialize> {
     message: Option<String>,
     code: i32,
     data: Option<T>,
+}
+
+impl<T: Serialize> MySimpleRawResponse<T> {
+    pub fn finish_ok(d: T) -> Self {
+        return Self {
+            message: None,
+            code: 0,
+            data: Some(d),
+        };
+    }
+    pub fn finish_err<P: Into<String>>(msg: P) -> Self {
+        return Self {
+            message: Some(msg.into()),
+            code: -1,
+            data: None,
+        };
+    }
 }
 
 pub type MySimpleResponse = MySimpleRawResponse<serde_json::Value>;
@@ -66,7 +87,7 @@ pub fn ok_wrp() -> ActixResult<MySimpleResponse> {
         message: None,
     })
 }
-pub fn msg_ok_wrp(msg: &str) -> ActixResult<MySimpleResponse> {
+pub fn msg_ok_wrp<T: Into<String>>(msg: T) -> ActixResult<MySimpleResponse> {
     Ok(MySimpleResponse {
         code: 0,
         data: None,

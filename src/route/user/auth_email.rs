@@ -5,7 +5,7 @@ use crate::{
     },
     entity::model::StringList,
     route::user::model::EmailAuthInfo,
-    util::log_ise,
+    util::{log_ise, log_ise_ns},
 };
 use actix_session::Session;
 use actix_web::{error, post, web};
@@ -71,11 +71,11 @@ pub async fn auth_email(
         .map_err(log_ise)?;
         session
             .insert(SESSION_UID, model.id.clone().unwrap())
-            .map_err(log_ise)?;
+            .map_err(log_ise_ns)?;
 
         session
             .insert(SESSION_LOGIN_TIME, chrono::Local::now().timestamp())
-            .map_err(log_ise)?;
+            .map_err(log_ise_ns)?;
         let uid = model.id.unwrap();
         return ok_data_wrp(&json!({ "uid": uid }));
     } else {

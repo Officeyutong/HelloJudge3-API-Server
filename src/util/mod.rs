@@ -42,7 +42,23 @@ pub async fn argon2_verify(pwd: &str, hash: &str) -> ResultType<bool> {
     return resp;
 }
 
-pub fn log_ise<T: Display>(e: T) -> actix_web::Error {
+pub fn log_error_custom<T: Into<anyhow::Error>>(e: T, err: actix_web::Error) -> actix_web::Error {
+    let r: anyhow::Error = e.into();
+    error!("Error: {:#?}\n{}\n", r, r.backtrace());
+    return err;
+}
+
+pub fn log_ise<T: Into<anyhow::Error>>(e: T) -> actix_web::Error {
+    log_error_custom(
+        e,
+        actix_web::error::ErrorInternalServerError("Internal Server Error"),
+    )
+}
+pub fn log_br<T: Into<anyhow::Error>>(e: T) -> actix_web::Error {
+    log_error_custom(e, actix_web::error::ErrorBadRequest("Illegal request"))
+}
+
+pub fn log_ise_ns<T: Display>(e: T) -> actix_web::Error {
     error!("Error: {}", e);
     actix_web::error::ErrorInternalServerError("Internal Server Error")
 }

@@ -15,7 +15,7 @@ use crate::core::state::HJ3State;
 use crate::core::ResultType;
 
 use crate::config::Config;
-use crate::route::user;
+use crate::route::{user, api_root_make_scope};
 use actix_session::CookieSession;
 use actix_web::{web, App, HttpServer};
 use anyhow::anyhow;
@@ -191,7 +191,11 @@ async fn main() -> ResultType<()> {
             .wrap(actix_web::middleware::Logger::new(
                 r#"%a,%{r}a "%r" %s %b %T"#,
             ))
-            .service(web::scope("/api").service(user::make_scope()))
+            .service(
+                web::scope("/api")
+                    .service(user::make_scope())
+                    .service(api_root_make_scope()),
+            )
     })
     .bind(bind)?
     .run()

@@ -6,7 +6,7 @@ use crate::{
     entity::user,
 };
 use actix_session::Session;
-use actix_web::{error, post, web, Result};
+use actix_web::{error, post, web, Responder, Result};
 use log::error;
 use sea_orm::{EntityTrait, FromQueryResult, QuerySelect};
 use serde::Serialize;
@@ -43,7 +43,15 @@ pub struct QueryLoginStateResponse {
     displayRepoInFooter: bool,
 }
 #[post("/query_login_state")]
-pub async fn query_login_state(
+pub async fn query_login_state(state: web::Data<HJ3State>, session: Session) -> impl Responder {
+    return query_login_state_impl(state, session).await;
+}
+#[post("/this_should_be_the_first_request")]
+pub async fn this_should_be_the_first_request(state: web::Data<HJ3State>, session: Session) -> impl Responder {
+    return query_login_state_impl(state, session).await;
+}
+
+async fn query_login_state_impl(
     // input: Option<web::Json<QueryLoginStateInput>>,
     state: web::Data<HJ3State>,
     session: Session,
@@ -117,19 +125,7 @@ pub async fn query_login_state(
                     .map_err(error::ErrorInternalServerError)?;
                 result.username = Some(user.username);
                 result.email = Some(user.email);
-                // if let Some(i1) = input {
-                //     if let Some(v) = i1.withPermission {
-                //         if v {
-                //             result.permissions = Some(
-                //                 state
-                //                     .perm_manager
-                //                     .get_all_permissions(Some(uid))
-                //                     .await
-                //                     .map_err(error::ErrorInternalServerError)?,
-                //             );
-                //         }
-                //     }
-                // }
+                result.uid = Some(uid);
             } else {
                 error!(
                     "Invalid permission_group {} for user: {}, {}",

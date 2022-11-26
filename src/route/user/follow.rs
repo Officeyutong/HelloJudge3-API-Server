@@ -1,4 +1,6 @@
 #![allow(non_snake_case)]
+use std::collections::HashSet;
+
 use crate::{
     core::{
         msg_err_wrp, ok_data_msg_wrp, session::ParsedSessionState, state::HJ3State, ActixResult,
@@ -12,19 +14,13 @@ use actix_web::{
     post,
     web::{self, Json},
 };
-use anyhow::anyhow;
-use log::debug;
 use sea_orm::{
-    sea_query::{
-        Alias, BinOper, Expr, IntoIden, IntoTableRef, MysqlQueryBuilder, Query, SimpleExpr,
-        SubQueryStatement,
-    },
-    ActiveModelTrait, ColumnTrait, DatabaseConnection, DeriveIden, DynIden, EntityTrait, EnumIter,
-    ModelTrait, PaginatorTrait, QueryFilter, SelectGetableValue, Selector, Set, Value,
+    ActiveModelTrait, ColumnTrait, Condition, DatabaseConnection, DeriveIden, EntityTrait,
+    EnumIter, FromQueryResult, ModelTrait, PaginatorTrait, QueryFilter, QuerySelect, RelationTrait,
+    Set,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use std::sync::Arc;
 
 #[derive(Deserialize)]
 pub struct ToggleFollowStateJson {
@@ -90,6 +86,11 @@ pub struct GetFollowerListRequest {
     target: i32,
     page: Option<i32>,
 }
+#[derive(Deserialize)]
+pub struct GetFolloweeListRequest {
+    source: i32,
+    page: Option<i32>,
+}
 
 #[post("/get_follower_list")]
 async fn get_follower_list(
@@ -113,12 +114,12 @@ async fn get_follower_list(
 async fn get_followee_list(
     session: Session,
     state: web::Data<HJ3State>,
-    json: web::Json<GetFollowerListRequest>,
+    json: web::Json<GetFolloweeListRequest>,
 ) -> ActixResult<Json<FollowshipResponse>> {
     let self_uid = session.uid().ok();
 
     let resp = generate_followship_list(
-        FollowshipQuery::SelfFollowing(json.target),
+        FollowshipQuery::SelfFollowing(json.source),
         self_uid,
         json.page.unwrap_or(1) as usize,
         state.config.display.followers_per_page as usize,
@@ -149,9 +150,9 @@ async fn generate_followship_list(
     db: &DatabaseConnection,
 ) -> ActixResult<FollowshipResponse> {
     use crate::entity::follower::*;
-    let f1: DynIden = Arc::new(Alias::new("f1"));
-    let f2: DynIden = Arc::new(Alias::new("f2"));
-    let self_followed: DynIden = Arc::new(Alias::new("self_followed"));
+    // let f1: DynIden = Arc::new(Alias::new("f1"));
+    // let f2: DynIden = Arc::new(Alias::new("f2"));
+    // let self_followed: DynIden = Arc::new(Alias::new("self_followed"));
     /*
     这个用户关注的人:
     select
@@ -171,106 +172,84 @@ async fn generate_followship_list(
         where f1.target = TARGET
 
     */
-    let count = Entity::find()
+    #[derive(FromQueryResult)]
+    struct Local {
+        uid: i32,
+        username: String,
+        email: String,
+        time: chrono::NaiveDateTime,
+    }
+    let paginator = Entity::find()
+        .select_only()
+        .column_as(
+            match &query {
+                FollowshipQuery::SelfFollowing(_) => Column::Target,
+                FollowshipQuery::FollowingSelf(_) => Column::Source,
+            },
+            "uid",
+        )
+        .column(user::Column::Username)
+        .column(user::Column::Email)
+        .column(Column::Time)
+        .join(
+            sea_orm::JoinType::Join,
+            match &query {
+                FollowshipQuery::SelfFollowing(_) => Relation::Target.def(),
+                FollowshipQuery::FollowingSelf(_) => Relation::Source.def(),
+            },
+        )
         .filter(match &query {
             FollowshipQuery::SelfFollowing(v) => Column::Source.eq(*v),
             FollowshipQuery::FollowingSelf(v) => Column::Target.eq(*v),
         })
-        .count(db)
-        .await
-        .map_err(|e| anyhow!("Failed to perform database query: {}", e))
-        .map_err(log_ise)? as usize;
-    let page_count = count / page_size + ((count % page_size != 0) as usize);
-    let stmt = Query::select()
-        .from_as(Entity.into_table_ref(), f1.clone())
-        .column(Column::Target)
-        .column(Column::Source)
-        .column(user::Column::Username)
-        .column(user::Column::Email)
-        .column(Column::Time)
-        .expr_as(
-            match me {
-                Some(me) => SimpleExpr::Binary(
-                    Box::new(SimpleExpr::SubQuery(Box::new(
-                        SubQueryStatement::SelectStatement(
-                            Query::select()
-                                .from_as(Entity.into_table_ref(), f2.clone())
-                                .expr(Expr::asterisk().count())
-                                .and_where(
-                                    Expr::tbl(f2.clone(), Column::Source.into_iden())
-                                        .eq(Value::Int(Some(me)))
-                                        .and(
-                                            Expr::tbl(f2.clone(), Column::Target.into_iden())
-                                                .equals(
-                                                    f1.clone(),
-                                                    match &query {
-                                                        FollowshipQuery::SelfFollowing(_) => {
-                                                            Column::Target.into_iden()
-                                                        }
-                                                        FollowshipQuery::FollowingSelf(_) => {
-                                                            Column::Source.into_iden()
-                                                        }
-                                                    },
-                                                ),
-                                        ),
-                                )
-                                .to_owned(),
-                        ),
-                    ))),
-                    BinOper::NotEqual,
-                    Box::new(SimpleExpr::Value(Value::Int(Some(0)))),
-                ),
-                None => SimpleExpr::Value(Value::Bool(Some(false))),
-            },
-            self_followed.clone(),
-        )
-        .join(
-            sea_orm::JoinType::Join,
-            user::Entity.into_table_ref(),
-            Expr::tbl(user::Entity.into_iden(), user::Column::Id.into_iden()).equals(
-                f1.clone(),
-                match &query {
-                    FollowshipQuery::SelfFollowing(_) => Column::Target,
-                    FollowshipQuery::FollowingSelf(_) => Column::Source,
-                },
-            ),
-        )
-        .and_where(match &query {
-            FollowshipQuery::SelfFollowing(src_uid) => {
-                Expr::tbl(f1.clone(), Column::Source.into_iden()).eq(Value::Int(Some(*src_uid)))
-            }
-            FollowshipQuery::FollowingSelf(tgt_uid) => {
-                Expr::tbl(f1.clone(), Column::Target.into_iden()).eq(Value::Int(Some(*tgt_uid)))
-            }
-        })
-        .limit(page_size as u64)
-        .offset((page_size * (page - 1)) as u64)
-        .to_owned();
-    debug!("Followship query:\n{}", stmt.build(MysqlQueryBuilder).0);
+        .into_model::<Local>()
+        .paginate(db, page_size);
+    let page_count = paginator.num_pages().await.map_err(log_ise)?;
+    let current_page = paginator.fetch_page(page - 1).await.map_err(log_ise)?;
+    let output = if let Some(self_uid) = me {
+        let query_uids = current_page.iter().map(|v| v.uid).collect::<Vec<_>>();
+        #[derive(FromQueryResult)]
+        struct Local {
+            target: i32,
+        }
 
-    // <(i32, i32, String, String, chrono::NaiveDateTime, bool)>::find_by_statemenst();
-    let entries = Selector::<
-        SelectGetableValue<(i32, i32, String, String, chrono::NaiveDateTime, bool), ResultCol>,
-    >::with_columns::<(i32, i32, String, String, chrono::NaiveDateTime, bool), ResultCol>(
-        stmt
-    )
-    .all(db)
-    .await
-    .map_err(log_ise)?;
-    let mut output = vec![];
-    output.reserve(entries.len());
-    for s in entries.into_iter() {
-        output.push(Followship {
-            uid: match &query {
-                FollowshipQuery::SelfFollowing(_) => s.0,
-                FollowshipQuery::FollowingSelf(_) => s.1,
-            },
-            username: s.2,
-            email: s.3,
-            followedByMe: s.5,
-            time: s.4.timestamp(),
-        });
-    }
+        let followed_by_self = Entity::find()
+            .select_only()
+            .column(Column::Target)
+            .filter(
+                Condition::all()
+                    .add(Column::Source.eq(self_uid))
+                    .add(Column::Target.is_in(query_uids)),
+            )
+            .into_model::<Local>()
+            .all(db)
+            .await
+            .map_err(log_ise)?
+            .into_iter()
+            .map(|v| v.target)
+            .collect::<HashSet<_>>();
+        current_page
+            .into_iter()
+            .map(|v| Followship {
+                uid: v.uid,
+                username: v.username,
+                email: v.email,
+                followedByMe: followed_by_self.contains(&v.uid),
+                time: v.time.timestamp(),
+            })
+            .collect()
+    } else {
+        current_page
+            .into_iter()
+            .map(|v| Followship {
+                uid: v.uid,
+                username: v.username,
+                email: v.email,
+                followedByMe: false,
+                time: v.time.timestamp(),
+            })
+            .collect()
+    };
     return Ok(FollowshipResponse {
         code: 0,
         data: output,

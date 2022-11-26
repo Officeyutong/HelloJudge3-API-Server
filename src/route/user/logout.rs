@@ -11,13 +11,13 @@ use crate::{
         msg_err_wrp, ok_wrp, state::HJ3State, ActixResult, MySimpleResponse, SESSION_LOGIN_TIME,
         SESSION_UID,
     },
-    util::log_ise,
+    util::{log_ise, log_ise_ns},
 };
 
 #[post("/logout")]
 pub async fn logout(session: Session, state: web::Data<HJ3State>) -> ActixResult<MySimpleResponse> {
     use crate::entity::user::*;
-    if let Some(uid) = session.get::<i32>(SESSION_UID).map_err(log_ise)? {
+    if let Some(uid) = session.get::<i32>(SESSION_UID).map_err(log_ise_ns)? {
         session.remove(SESSION_UID);
         session.remove(SESSION_LOGIN_TIME);
         let update_stmt = Query::update()

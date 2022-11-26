@@ -51,20 +51,29 @@ impl PermissionManager {
         }
         Ok(())
     }
-    pub async fn has_permission(&self, uid: Option<i32>, perm: &str) -> ResultType<bool> {
+    pub async fn clear_cache(&self, uid: Option<i32>) -> ResultType<()> {
+        self.refresh_user(uid).await
+    }
+    pub async fn has_permission<T: Into<String>>(
+        &self,
+        uid: Option<i32>,
+        perm: T,
+    ) -> ResultType<bool> {
+        let perm_str = perm.into();
         if let Some(uid) = uid {
             let mut conn = self.redis.get_async_connection().await?;
             let set_name = redis_key_perm(uid);
             if !conn.exists(&set_name).await? {
                 self.load_into_cache(uid).await?;
             }
-            if conn.sismember(&set_name, format!("-{}", perm)).await? {
+            if conn.sismember(&set_name, format!("-{}", perm_str)).await? {
                 return Ok(false);
             }
-            if conn.sismember(&set_name, "*").await? || conn.sismember(&set_name, perm).await? {
+            if conn.sismember(&set_name, "*").await? || conn.sismember(&set_name, &perm_str).await?
+            {
                 return Ok(true);
             }
-            let split = perm.split(".").collect::<Vec<&str>>();
+            let split = perm_str.split(".").collect::<Vec<&str>>();
             for i in 0..split.len() {
                 // 前i个连起来
                 let curr_str = format!("{}.*", split[..i].join("."));
@@ -74,7 +83,7 @@ impl PermissionManager {
             }
             return Ok(false);
         } else {
-            Ok(self.default_permissions.contains(perm))
+            Ok(self.default_permissions.contains(&perm_str))
         }
     }
     pub async fn get_all_permissions(&self, uid: Option<i32>) -> ResultType<Vec<String>> {
